@@ -144,3 +144,4 @@ ydb < qry_fee.in > qry_fee.in.out.bf
 set cnt=1 set account="" set ref="" for  set account=$O(^Z8501dfeeAccount(account)) quit:account=""  for  set ref=$O(^Z8501dfeeAccount(account,"COLLECTION",ref)) quit:ref=""  I $P(^Z8501dfeeAccount(account,"COLLECTION",ref),"|",20)="Migration" k ^Z8501dfeeAccount(account,"COLLECTION",ref) set cnt=cnt+1
 w cnt
 
+S A="" F  S A=$O(^Z8804dfeeAccount(A)) Q:A=""  S B="" F  S B=$O(^Z8804dfeeAccount(A,B)) Q:B=""  S C="" F  S C=$O(^Z8804dfeeAccount(A,B,C)) Q:C=""  if ($P(^Z8804dfeeAccount(A,B,C),"|",1)'="Entry=JOB : v1ReadFeeAccount,") w !,A_"|"_B_"|"_C_"|"_^Z8804dfeeAccount(A,B,C)
