@@ -1,0 +1,146 @@
+https://docs.yottadb.com/MultiLangProgGuide/goprogram.html#go-callmt
+
+cd ydbdir 
+. ./ydbenv, . ./ydblocal
+ydb                              : เข้า YDB prompt
+
+========================
+list global <tool>
+========================
+YDB> d ^%G
+output (ลิ้งไปตำแหน่งไฟล์ mum.data)
+List ^?d
+
+set data
+s ^Global(key) ="value1|value2|value3|...|valueN"
+set ^EMPLOYEE(1,"CEO")="toss|saengparnkaew|banking|001|100000"
+set ^EMPLOYEE(2,"BA")="aomm|ziri|banking|001|30000"
+set ^EMPLOYEE(2,"Dev")="moss|ziri|banking|001|30000"
+set ^EMPLOYEE(4,"Dev")="joss|kaikow|banking|001|50000"
+set ^EMPLOYEE(5,"Dev")="yoss|musup|banking|001|70000"
+set ^EMPLOYEE(6,"Dev")="test|musup|banking|001|70000"
+========================
+list data <tool>
+========================
+w ^Global(key) 			        : list data
+zwr ^Global(key) 		        : list all data 
+List ^Global(LAST1) 	        : list data last 2 (list global ก่อน)
+S A=$O(^Global(""))           : loop ได้ data ตัวแรก  : W A ^EMPLOYEE("A1")="toss|saengparnkaew|banking|CEO|001|100000"
+S A=$O(^Global("key"))         : loop ได้ data ตัวสอง  : W A ^EMPLOYEE("A2")="moss|ziri|banking|Dev|001|30000"
+w $P(^Global("key"),"|",n)     : List data A1 of piece 4
+$G(^Global(key))                : get ถ้าไม่มีค่า จะเป็น “” กลับมา        : $G(^EMPLOYEE("A1"))
+$D                              : is defined                       
+                                    0 ไม่เจอ                         : w $D(^EMPLOYEE("2",""))  return 0
+                                    1 มี data                       : w $D(^EMPLOYEE("2","Dev"))  return 1
+                                    10 เป็น pointer ไม่มี data         : w $D(^EMPLOYEE("2"))  return 10
+                                    11 เป็น pointer และมี data        : set ^EMPLOYEE(2)="good"   w $D(^EMPLOYEE("2"))    return 11
+11
+
+_ 						        : เชื่อม str
+h						        : exit
+IF						        : if
+"F  "					        : loop
+<>                              : ไม่เท่ากับ
+index                           : เนื่องจากความไวในการ Access data มาจากการ query by key หากต้องการหาข้อมูลที่ไม่ใช้ key ให้ไว ก็ทำการเอา filed นั้นเป็น key/index ซ้ะ
+                                  ^globlaIndex จะทำการเอา filedที่ต้องการมาเป็น คีย์แรกและต่อด้วย คีย์เดิมของตารางนั้นๆ เมื่อทำการ filter ด้วย index จะทำการจิ้มที่ global index ก่อนแล้วเอาคีย์ที่ได้ไปหาใน global จริงๆด้วยคีย์ตามเดิม มันก็จะไว
+--------------------------------------------
+Key 1ตัว
+s ^EMPLOYEE("A1")="toss|saengparnkaew|banking|CEO|001|100000"
+s ^EMPLOYEE("A2")="moss|ziri|banking|Dev|001|30000"
+s ^EMPLOYEE("A3")="boss|moji|banking|Dev|001|20000"
+s ^EMPLOYEE("A4")="joss|kaikow|banking|Dev|001|50000"
+s ^EMPLOYEE("A5")="yoss|musup|banking|Dev|001|70000"
+zwr ^EMPLOYEE
+> เพื่มเงินเดือน CEO 30 %, Dev 10%
+S A="" F  S A=$O(^EMPLOYEE(A)) Q:A=""  IF $P(^EMPLOYEE(A),"|",4)="CEO" SET $P(^EMPLOYEE(A),"|",6)=$P(^EMPLOYEE(A),"|",6)+($P(^EMPLOYEE(A),"|",6)*30/100)
+S A="" F  S A=$O(^EMPLOYEE(A)) Q:A=""  IF $P(^EMPLOYEE(A),"|",4)="Dev" SET $P(^EMPLOYEE(A),"|",6)=$P(^EMPLOYEE(A),"|",6)+($P(^EMPLOYEE(A),"|",6)*10/100)
+
+
+--------------------------------------------
+Key 2ตัว 
+s ^EMPLOYEE("1","CEO")="toss|saengparnkaew|banking|001|100000"
+s ^EMPLOYEE("2","Dev")="moss|ziri|banking|001|30000"
+s ^EMPLOYEE("3","Dev")="boss|moji|banking|001|20000"
+s ^EMPLOYEE("4","Dev")="joss|kaikow|banking|001|50000"
+s ^EMPLOYEE("5","Dev")="yoss|musup|banking|001|70000"
+> เพื่มเงินเดือน CEO 30 %, Dev 10%
+S A="" F  S A=$O(^EMPLOYEE(A)) Q:A=""  S B="" F  S B=$O(^EMPLOYEE(A,B)) Q:B=""  IF B="Dev" SET $P(^EMPLOYEE(A,B),"|",5)=$P(^EMPLOYEE(A,B),"|",5)+($P(^EMPLOYEE(A,B),"|",5)*10/100)
+S A="" F  S A=$O(^EMPLOYEE(A)) Q:A=""  S B="" F  S B=$O(^EMPLOYEE(A,B)) Q:B=""  IF B="CEO" SET $P(^EMPLOYEE(A,B),"|",5)=$P(^EMPLOYEE(A,B),"|",5)+($P(^EMPLOYEE(A,B),"|",5)*30/100)
+> sum เงินเดือน
+S DATA="" S A="" F  S A=$O(^EMPLOYEE(A)) Q:A=""  S B="" F  S B=$O(^EMPLOYEE(A,B)) Q:B=""  SET DATA=DATA+$P(^EMPLOYEE(A,B),"|",5)
+> count 
+S count=0 S A="" F  S A=$O(^EMPLOYEE(A)) Q:A=""  S B="" F  S B=$O(^EMPLOYEE(A,B)) Q:B=""  IF $P(^EMPLOYEE(A,B),"|",3)="banking" SET count=count+1
+--------------------------------------------
+
+s ^BILL(600000001,1,1)="1.01"
+s ^BILL(600000001,1,2)="2.01"
+s ^BILL(600000001,2,1)="3.01"
+s ^BILL(600000002,1,1)="4.01"
+s ^BILL(600000002,2,1)="4.01"
+s ^BILL(600000003,2,1)="5.01"
+s ^BILL(600000004,1,1)="6.01"
+
+> sum ภายใต้ account
+>> set ลง ตัวแปร
+S ZsummaryMj="" S A="" F  S A=$O(^BILL(A)) Q:A=""  S B="" F  S B=$O(^BILL(A,B)) Q:B=""  S C="" F  S C=$O(^BILL(A,B,C)) Q:C=""  SET ZsummaryMj(A)=$G(ZsummaryMj(A))+^BILL(A,B,C)
+>> set ลง Global
+S A="" F  S A=$O(^BILL(A)) Q:A=""  S B="" F  S B=$O(^BILL(A,B)) Q:B=""  S C="" F  S C=$O(^BILL(A,B,C)) Q:C=""  SET ^ZsummaryMj(A)=$G(^ZsummaryMj(A))+^BILL(A,B,C)
+
+> sum ภายใต้ sub account เฉพาะ sub account=1
+S A="" F  S A=$O(^BILL(A)) Q:A=""  S B="" F  S B=$O(^BILL(A,B)) Q:B=""  S C="" F  S C=$O(^BILL(A,B,C)) Q:C=""  IF B=1 SET ^ZsummaryToss(A,B)=$G(^ZsummaryToss(A,B))+^BILL(A,B,C)
+
+
+
+============================================================
+sum transaction_amount by transaction_date
+sum transaction_amount by account_id,transaction_date
+
+set ^ZM104fundLotHistory("UH01","FUND01",2,1,"2023-01-10","EVENTREF1")="5000|5000|UH01_FUND01|TRANREF01|T"
+set ^ZM104fundLotHistory("UH01","FUND02",2,1,"2023-01-11","EVENTREF2")="1000|1000|UH01_FUND02|TRANREF02|T"
+set ^ZM104fundLotHistory("UH02","FUND01",2,1,"2023-01-11","EVENTREF3")="5000|5000|UH02_FUND01|TRANREF03|T"
+set ^ZM104fundLotHistory("UH03","FUND02",2,1,"2023-01-05","EVENTREF4")="3000|3000|UH03_FUND02|TRANREF04|T"
+set ^ZM104fundLotHistory("UH03","FUND02",3,2,"2023-01-10","EVENTREF5")="5000|5000|UH03_FUND02|TRANREF05|T"
+set ^ZM104fundLotHistory("UH03","FUND03",2,1,"2023-01-10","EVENTREF6")="5000|5000|UH03_FUND03|TRANREF06|T"
+set ^ZM104fundLotHistory("UH03","FUND05",2,1,"2023-01-10","EVENTREF7")="5000|5000|UH03_FUND05|TRANREF07|T"
+
+sum transaction_amount by transaction_date
+sum transaction_amount by account_id,transaction_date
+
+
+
+
+S A="" F  S A=$O(^ZM104fundLotHistory(A)) Q:A=""  S B="" F  S B=$O(^ZM104fundLotHistory(A,B)) Q:B=""  S C="" F  S C=$O(^ZM104fundLotHistory(A,B,C)) Q:C=""  S D="" F  S D=$O(^ZM104fundLotHistory(A,B,C,D)) Q:D=""  S E="" F  S E=$O(^ZM104fundLotHistory(A,B,C,D,E)) Q:E=""  S F="" F  S F=$O(^ZM104fundLotHistory(A,B,C,D,E,F)) Q:F=""  SET ^ZsummaryTran(E)=$G(^ZsummaryTran(E))+^ZM104fundLotHistory(A,B,C,D,E,F)
+
+S acc="" S A="" F  S A=$O(^ZM104fundLotHistory(A)) Q:A=""  S B="" F  S B=$O(^ZM104fundLotHistory(A,B)) Q:B=""  S C="" F  S C=$O(^ZM104fundLotHistory(A,B,C)) Q:C=""  S D="" F  S D=$O(^ZM104fundLotHistory(A,B,C,D)) Q:D=""  S E="" F  S E=$O(^ZM104fundLotHistory(A,B,C,D,E)) Q:E=""  S F="" F  S F=$O(^ZM104fundLotHistory(A,B,C,D,E,F)) Q:F=""  SET acc=$P(^ZM104fundLotHistory(A,B,C,D,E,F),"|",3) SET ^ZsummaryTranAcc(E,acc)=$G(^ZsummaryTranAcc(E,acc))+^ZM104fundLotHistory(A,B,C,D,E,F)
+
+
+ set global="^Z" for  set global=$O(@global) quit:(global="")!(global]]"^zzzzzzz")  write global,"|"
+ set global="^te" for  set global=$O(@global) quit:(global="")!(global]]"^te")  write global,"|"
+ set global="^zz" for  set global=$O(@global) quit:(global="")  kill @global
+
+
+
+cmd4='set global="'$start'" for  set global=\$O(@global) quit:(global="")!(global]]"'$stop'")  kill @global'
+
+
+
+cd /ydbdir  
+echo 'S A="" F  S A=$O(^Z8804dsubAccount(A)) Q:A=""  S B="" F  S B=$O(^Z8804dsubAccount(A,B)) Q:B=""  if ($P(^Z8804dsubAccount(A,B),"|",32)="flase"),($P(^Z8804dsubAccount(A,B),"|",17)=$C(127)) w !,A_"|"_B' > qry_Z8804dsubAccount.in
+chmod 775 qry_Z8804dsubAccount.in
+ydb < qry_Z8804dsubAccount.in > qry_Z8804dsubAccount.in.out.bf
+
+echo 'S A="" F  S A=$O(^Z8804dsubAccount(A)) Q:A=""  S B="" F  S B=$O(^Z8804dsubAccount(A,B)) Q:B=""  if ($P(^Z8804dsubAccount(A,B),"|",9)=25),(B<0),($P(^Z8804dsubAccount(A,B),"|",32)="false"),($P(^Z8804dsubAccount(A,B),"|",17)=$C(127)) w !,A_"|"_B' > qry_Z8804dsubAccount.in
+
+
+set acc="" set seq="" set bill="" f  set acc=$O(^Z8804dbill(acc)) quit:acc=""  for  set seq=$O(^Z8804dbill(acc,seq)) quit:seq=""   for  set bill=$O(^Z8804dbill(acc,seq,bill)) quit:bill=""  set prin=$P(^Z8804dbill(acc,seq,bill),"|",13) set int=$P(^Z8804dbill(acc,seq,bill),"|",12) set pen=$P(^Z8804dbill(acc,seq,bill),"|",11) set vat=$P(^Z8804dbill(acc,seq,bill),"|",23) set status=$P(^Z8804dsubAccount(acc,seq),"|",32) if (prin+int+pen>0)&(status="true")   w !,acc_"|"_seq_"|"_prin_"|"_int_"|"_pen_"|"_status
+
+    
+
+cd /ydbdir
+echo 'set cnt=1 set account="" set ref="" for  set account=$O(^Z8501dfeeAccount(account)) quit:account=""  for  set ref=$O(^Z8501dfeeAccount(account,"COLLECTION",ref)) quit:ref=""  I $P(^Z8501dfeeAccount(account,"COLLECTION",ref),"|",20)="Migration" w !,cnt_"|"_account_"|"_ref_"|"_$P(^Z8501dfeeAccount(account,"COLLECTION",ref),"|",11)_"|"_$P(^Z8501dfeeAccount(account,"COLLECTION",ref),"|",20) set cnt=cnt+1' > qry_fee.in
+chmod 775 qry_fee.in
+ydb < qry_fee.in > qry_fee.in.out.bf
+
+set cnt=1 set account="" set ref="" for  set account=$O(^Z8501dfeeAccount(account)) quit:account=""  for  set ref=$O(^Z8501dfeeAccount(account,"COLLECTION",ref)) quit:ref=""  I $P(^Z8501dfeeAccount(account,"COLLECTION",ref),"|",20)="Migration" k ^Z8501dfeeAccount(account,"COLLECTION",ref) set cnt=cnt+1
+w cnt
+

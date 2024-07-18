@@ -1,0 +1,88 @@
+Kaf-ka
+
+
+
+NEW
+
+15 replies
+
+
+
+  4 years ago
+kafka-topics.sh --bootstrap-server :9092 --list
+
+kafka-topics.sh --bootstrap-server :9092 --create --topic test
+
+kafka-console-producer.sh --broker-list :9092 --topic test
+
+kafka-console-consumer.sh --bootstrap-server :9092 --topic test
+
+
+
+  3 years ago
+./kafka-topics.sh --bootstrap-server th-tnc-uis-kafka02:9092 --list
+
+./kafka-console-consumer.sh --bootstrap-server th-tnc-uis-kafka02:9092 --topic journal-8802-accountRestriction --from-beginning
+./kafka-consumer-groups.sh --bootstrap-server <ชื่อเครื่อง>:9092 --describe --group flume
+
+
+
+  3 years ago
+./kafka-consumer-groups.sh --bootstrap-server th-tnc-uis-kafka04:9092 --describe --all-groups 
+
+
+
+  3 years ago
+เข้าเครื่อง kafka  cd /data/kafkadata/kafka-bin/bin
+
+
+
+  3 years ago
+df -h
+
+
+
+
+./kafka-console-consumer.sh --bootstrap-server th-tnc-uis-kafka02:9092 --topic updated-8804-advance-payment --from-beginning
+
+
+
+
+./kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --all-groups 
+
+./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic my-topic-test --from-beginning
+
+
+
+
+./kafka-topics.sh — zookeeper localhost:9092 — delete — topic my-topic-test
+
+
+
+
+cd /opt/kafka/bin/
+
+
+
+
+./kafka-console-producer.sh --bootstrap-server ecs-lms-nonprd-kafka-01:9096 --topic post-back-date
+{"rq_header":{"job-id":"240510f0d79a8aCD199999","message-id":"reran/lpr-back-date/transactions/back-date/post2405105c131bcdCD144396240510203749032399999","requested-service":"/lpr-back-date/transactions/back-date/post","requested-service-version":"v1","caller-service":"01","caller-domain":"CD","caller-return-service":"","caller-return-service-version":"","datetime":"2024-05-01T20:37:49.032376505+07:00","accept-language":"en/th","accept-encoding":"UTF-8","original-caller-domain":"CD","user-id":"INTERNAL","service-branch":"","location":""},"rq_body":{"account_number":290000021367,"effective_date":"2024-04-30","transaction_amount":8350.00,"ref1":"8020266014538","ref2":"01","repayment_by":"kl"}}
+
+
+
+
+kafka-console-producer.sh --broker-list ecs-lms-prd-dc1-kafka-01:9092 --topic sub-account-payment-due (edited) 
+
+
+
+./kafka-console-producer.sh --bootstrap-server ecs-lms-prd-dc1-kafka-01:9092 --topic sub-account-payment-due < temp.text
+
+
+
+
+./kafka-console-consumer.sh --bootstrap-server ecs-lms-nonprd-kafka-01:9092 --topic payment-allocated --from-beginning > payment-allocated.text
+
+
+./kafka-console-producer.sh --bootstrap-server ecs-lms-nonprd-kafka-01:9096 --topic post-back-date
+
+./kafka-console-producer.sh --bootstrap-server ecs-lms-prd-dc1-kafka-01:9092 --topic sub-account-oldest-stmt-due-date
