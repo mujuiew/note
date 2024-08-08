@@ -145,3 +145,10 @@ set cnt=1 set account="" set ref="" for  set account=$O(^Z8501dfeeAccount(accoun
 w cnt
 
 S A="" F  S A=$O(^Z8804dfeeAccount(A)) Q:A=""  S B="" F  S B=$O(^Z8804dfeeAccount(A,B)) Q:B=""  S C="" F  S C=$O(^Z8804dfeeAccount(A,B,C)) Q:C=""  if ($P(^Z8804dfeeAccount(A,B,C),"|",1)'="Entry=JOB : v1ReadFeeAccount,") w !,A_"|"_B_"|"_C_"|"_^Z8804dfeeAccount(A,B,C)
+
+
+
+cd /ydbdir
+echo 'S A="" F  S A=$O(^jZ8804boutstandingBill(A)) Q:A=""  S B="" F  S B=$O(^jZ8804boutstandingBill(A,B)) Q:B=""  S C="" F  S C=$O(^jZ8804boutstandingBill(A,B,C)) Q:C=""  S D="" F  S D=$O(^jZ8804boutstandingBill(A,B,C,D)) Q:D=""  S BODY=$P(^jZ8804boutstandingBill(A,B,C,D),"|",1)_"|"_$P(^jZ8804boutstandingBill(A,B,C,D),"|",2)_"|"_$P(^jZ8804boutstandingBill(A,B,C,D),"|",3)_"|"_$P(^jZ8804boutstandingBill(A,B,C,D),"|",4)_"|"_$P(^jZ8804boutstandingBill(A,B,C,D),"|",5)_"|"_$P(^jZ8804boutstandingBill(A,B,C,D),"|",6)_"|"_$P(^jZ8804boutstandingBill(A,B,C,D),"|",9)_"|"_$P(^jZ8804boutstandingBill(A,B,C,D),"|",11)_"|"_$P(^jZ8804boutstandingBill(A,B,C,D),"|",13) S ^Z8804doutstandingBill(A,B,C)=BODY ' > qry_out_journal.in
+chmod 775 qry_out_journal.in
+ydb < qry_out_journal.in > qry_fee.qry_out_journal.out.bf
