@@ -152,3 +152,16 @@ cd /ydbdir
 echo 'S A="" F  S A=$O(^jZ8804boutstandingBill(A)) Q:A=""  S B="" F  S B=$O(^jZ8804boutstandingBill(A,B)) Q:B=""  S C="" F  S C=$O(^jZ8804boutstandingBill(A,B,C)) Q:C=""  S D="" F  S D=$O(^jZ8804boutstandingBill(A,B,C,D)) Q:D=""  S BODY=$P(^jZ8804boutstandingBill(A,B,C,D),"|",1)_"|"_$P(^jZ8804boutstandingBill(A,B,C,D),"|",2)_"|"_$P(^jZ8804boutstandingBill(A,B,C,D),"|",3)_"|"_$P(^jZ8804boutstandingBill(A,B,C,D),"|",4)_"|"_$P(^jZ8804boutstandingBill(A,B,C,D),"|",5)_"|"_$P(^jZ8804boutstandingBill(A,B,C,D),"|",6)_"|"_$P(^jZ8804boutstandingBill(A,B,C,D),"|",9)_"|"_$P(^jZ8804boutstandingBill(A,B,C,D),"|",11)_"|"_$P(^jZ8804boutstandingBill(A,B,C,D),"|",13) S ^Z8804doutstandingBill(A,B,C)=BODY ' > qry_out_journal.in
 chmod 775 qry_out_journal.in
 ydb < qry_out_journal.in > qry_fee.qry_out_journal.out.bf
+
+
+cd /ydbdir
+echo 'S A="" F  S A=$O(^jZ8804boutstandingBill(A)) Q:A=""  S B="" F  S B=$O(^jZ8804boutstandingBill(A,B)) Q:B=""  S C="" F  S C=$O(^jZ8804boutstandingBill(A,B,C)) Q:C=""  S D="" F  S D=$O(^jZ8804boutstandingBill(A,B,C,D)) Q:D=""  if ($P(^jZ8804boutstandingBill(A,B,C,D),"|",4)="Entry=KAFKA : v1/restructure-restructure/account-restructured,") w !,A_"|"_B_"|"_C_"|"_D_"|"_^jZ8804boutstandingBill(A,B,C,D)' > qry_out_journal_re.in
+chmod 775 qry_out_journal_re.in
+ydb < qry_out_journal_re.in > qry_fee.qry_out_journal_re.out.bf
+
+
+
+echo 'S A="" F  S A=$O(^Z8804dsubAccount(A)) Q:A=""  S B="" F  S B=$O(^Z8804dsubAccount(A,B)) Q:B=""  if ($P(^Z8804dsubAccount(A,B),"|",4)="Entry=KAFKA : v1/hp-hpprocess/repayment-close,") w !,A_"|"_B_"|"_^Z8804dsubAccount(A,B)' > qry_repayment_close.in
+chmod 775 qry_repayment_close.in
+ydb < qry_repayment_close.in > qry_fee.qry_repayment_close.out.bf
+
