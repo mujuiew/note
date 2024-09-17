@@ -165,3 +165,11 @@ echo 'S A="" F  S A=$O(^Z8804dsubAccount(A)) Q:A=""  S B="" F  S B=$O(^Z8804dsub
 chmod 775 qry_repayment_close.in
 ydb < qry_repayment_close.in > qry_fee.qry_repayment_close.out.bf
 
+
+cd /ydbdir
+echo 'S A="" F  S A=$O(^Z8401dpaymentState(A)) Q:A=""  S B="" F  S B=$O(^Z8401dpaymentState(A,B)) Q:B=""  if ($P(^Z8401dpaymentState(A,B),"|",7)="999") w !,A_"|"_B_"|"_^Z8401dpaymentState(A,B)' > qry_state_seq_999.in
+chmod 775 qry_state_seq_999.in
+ydb < qry_state_seq_999.in > qry_fee.qry_state_seq_999.out.bf
+
+
+
