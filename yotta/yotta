@@ -204,7 +204,7 @@ echo 'S A="" F  S A=$O(^Z8802daccount(A)) Q:A=""  if $P(^Z8802daccount(A),"|",10
 chmod 775 qry_Z8802daccount_closed.in
 ydb < qry_Z8802daccount_closed.in > qry_Z8802daccount_closed.in.out.bf
 
-; account closed transaction
+; account lock
 cd /ydbdir  
 echo 'S A="" F  S A=$O(^Z8802daccount(A)) Q:A=""  if $P(^Z8802daccount(A),"|",23)="true" w !,A ' > qry_Z8802daccount_is_adjusting.in
 chmod 775 qry_Z8802daccount_is_adjusting.in
