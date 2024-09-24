@@ -176,3 +176,36 @@ ydb < qry_state_seq_999.in > qry_fee.qry_state_seq_999.out.bf
 unpaid = 0
 
 set acc="" set seq="" set bill="" f  set acc=$O(^Z8804dbill(acc)) quit:acc=""  for  set seq=$O(^Z8804dbill(acc,seq)) quit:seq=""   for  set bill=$O(^Z8804dbill(acc,seq,bill)) quit:bill=""  set prin=$P(^Z8804dbill(acc,seq,bill),"|",13) set int=$P(^Z8804dbill(acc,seq,bill),"|",12) set pen=$P(^Z8804dbill(acc,seq,bill),"|",11) set vat=$P(^Z8804dbill(acc,seq,bill),"|",23) set status=$P(^Z8804dsubAccount(acc,seq),"|",29) if (prin+int+pen+vat=0)&(status="9999-12-31")   w !,acc_"|"_seq_"|"_prin_"|"_int_"|"_pen_"|"_status
+
+
+Z8804dflatRatePendingAdvance is done false
+cd /ydbdir
+echo 'S A="" F  S A=$O(^Z8804dflatRatePendingAdvance(A)) Q:A=""  S B="" F  S B=$O(^Z8804dflatRatePendingAdvance(A,B)) Q:B=""  S C="" F  S C=$O(^Z8804dflatRatePendingAdvance(A,B,C)) Q:C=""  if ($P(^Z8804dflatRatePendingAdvance(A,B,C),"|",17)'=true) w !,A_"|"_B_C_"|"_$P(^Z8804dflatRatePendingAdvance(A,B,C),"|",9)_"|"_$P(^Z8804dflatRatePendingAdvance(A,B,C),"|",10)' > qry_flatRatePendingAdvance.in
+chmod 775 qry_flatRatePendingAdvance.in
+ydb < qry_flatRatePendingAdvance.in > qry_pmt.qry_flatRatePendingAdvance.out.bf
+
+
+payment account
+
+cd /ydbdir
+echo 'S A="" F  S A=$O(^Z8802daccount(A)) Q:A=""  w !,A_"|"_$P(^Z8802daccount(A),"|",34)' > qry_account_installment.in
+chmod 775 qry_account_installment.in
+ydb < qry_account_installment.in > qry_pmt.qry_account_installment.out.bf
+
+
+cd /ydbdir
+echo 'S A="" F  S A=$O(^Z8401daccount(A)) Q:A=""  w !,A_"|"_$P(^Z8401daccount(A),"|",11)' > qry_hp_account_installment.in
+chmod 775 qry_hp_account_installment.in
+ydb < qry_hp_account_installment.in > qry_hp.qry_hp_account_installment.out.bf
+
+; account closed transaction
+cd /ydbdir  
+echo 'S A="" F  S A=$O(^Z8802daccount(A)) Q:A=""  if $P(^Z8802daccount(A),"|",10)="close" w !,A_"|"_$P(^Z8802daccount(A),"|",10)_"|"_$P(^Z8802daccount(A),"|",11)' > qry_Z8802daccount_closed.in
+chmod 775 qry_Z8802daccount_closed.in
+ydb < qry_Z8802daccount_closed.in > qry_Z8802daccount_closed.in.out.bf
+
+; account closed transaction
+cd /ydbdir  
+echo 'S A="" F  S A=$O(^Z8802daccount(A)) Q:A=""  if $P(^Z8802daccount(A),"|",23)="true" w !,A ' > qry_Z8802daccount_is_adjusting.in
+chmod 775 qry_Z8802daccount_is_adjusting.in
+ydb < qry_Z8802daccount_is_adjusting.in > qry_Z8802daccount_is_adjusting.in.out.bf
