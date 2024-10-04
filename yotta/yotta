@@ -192,6 +192,36 @@ echo 'S A="" F  S A=$O(^Z8802daccount(A)) Q:A=""  w !,A_"|"_$P(^Z8802daccount(A)
 chmod 775 qry_account_installment.in
 ydb < qry_account_installment.in > qry_pmt.qry_account_installment.out.bf
 
+==========================
+payment sub account
+cd /ydbdir
+echo 'S A="" F  S A=$O(^Z8804dsubAccount(A)) Q:A=""  S B="" F  S B=$O(^Z8804dsubAccount(A,B)) Q:B=""  if ($P(^Z8804dsubAccount(A,B),"|",32)="true") w !,A_"|"_B_"|"_^Z8804dsubAccount(A,B)' > qry_Z8804dsubAccount_close.in
+chmod 775 qry_Z8804dsubAccount_close.in
+ydb < qry_Z8804dsubAccount_close.in > qry_Z8804dsubAccount_close.out.bf
+
+; all
+; payment sub account
+cd /ydbdir
+echo 'S A="" F  S A=$O(^Z8804dsubAccount(A)) Q:A=""  S B="" F  S B=$O(^Z8804dsubAccount(A,B)) Q:B=""  w !,A_"|"_B_"|"_^Z8804dsubAccount(A,B)' > qry_Z8804dsubAccount.in
+echo 'S A="" F  S A=$O(^Z8804dsubAccount(A)) Q:A=""  S B="" F  S B=$O(^Z8804dsubAccount(A,B)) Q:B=""  w !,A_"|"_B_"|"_$P(^Z8804dsubAccount(A,B),"|",29)' > qry_Z8804dsubAccount_oldest.in
+chmod 775 qry_Z8804dsubAccount.in
+chmod 775 qry_Z8804dsubAccount_oldest.in
+ydb < qry_Z8804dsubAccount.in > qry_Z8804dsubAccount_20241004.out.bf
+ydb < qry_Z8804dsubAccount_oldest.in > qry_Z8804dsubAccount_oldest_20241004.out.bf
+
+; all
+; class sub account
+cd /ydbdir
+echo 'S A="" F  S A=$O(^ZC101dsubAccount(A)) Q:A=""  S B="" F  S B=$O(^ZC101dsubAccount(A,B)) Q:B=""  w !,A_"|"_B_"|"_^ZC101dsubAccount(A,B)' > qry_ZC101dsubAccount.in
+echo 'S A="" F  S A=$O(^ZC101dsubAccount(A)) Q:A=""  S B="" F  S B=$O(^ZC101dsubAccount(A,B)) Q:B=""  w !,A_"|"_B_"|"_$P(^ZC101dsubAccount(A,B),"|",7)' > qry_ZC101dsubAccount_oldest.in
+chmod 775 qry_ZC101dsubAccount.in
+chmod 775 qry_ZC101dsubAccount_oldest.in
+ydb < qry_ZC101dsubAccount.in > qry_ZC101dsubAccount_20241004.out.bf
+ydb < qry_ZC101dsubAccount_oldest.in > qry_ZC101dsubAccount_oldest_20241004.out.bf
+
+
+
+
 
 cd /ydbdir
 echo 'S A="" F  S A=$O(^Z8401daccount(A)) Q:A=""  w !,A_"|"_$P(^Z8401daccount(A),"|",11)' > qry_hp_account_installment.in
