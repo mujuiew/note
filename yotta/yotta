@@ -239,3 +239,22 @@ cd /ydbdir
 echo 'S A="" F  S A=$O(^Z8802daccount(A)) Q:A=""  if $P(^Z8802daccount(A),"|",23)="true" w !,A ' > qry_Z8802daccount_is_adjusting.in
 chmod 775 qry_Z8802daccount_is_adjusting.in
 ydb < qry_Z8802daccount_is_adjusting.in > qry_Z8802daccount_is_adjusting.in.out.bf
+
+
+// hp stage 
+
+; class sub account
+cd /ydbdir
+echo 'S A="" F  S A=$O(^Z8401dpaymentState(A)) Q:A=""  S B="" F  S B=$O(^Z8401dpaymentState(A,B)) Q:B=""  S print=$P(^Z8401dpaymentState(A,B),"|",9)  S int=$P(^Z8401dpaymentState(A,B),"|",10)  S vat=$P(^Z8401dpaymentState(A,B),"|",11)  if (print<0!int<0!vat<0) w !,A_"|"_B_"|"_^Z8401dpaymentState(A,B)' > Z8401dpaymentState_negative.in
+chmod 775 Z8401dpaymentState_negative.in
+ydb < Z8401dpaymentState_negative.in > Z8401dpaymentState_negative.out.bf
+
+
+
+
+; crl active 
+; payment sub account
+cd /ydbdir
+echo 'S A="200000000000" F  S A=$O(^Z8804dsubAccount(A)) Q:A=""  S B="" F  S B=$O(^Z8804dsubAccount(A,B)) Q:B=""  if ($P(^Z8804dsubAccount(A,B),"|",32)="false"),(B>0),($P(^Z8804dsubAccount(A,1),"|",29)'="9999-12-31") w !,A_"|"_1_"|"_$P(^Z8804dsubAccount(A,B),"|",17)_"|"_$P(^Z8804dsubAccount(A,1),"|",29)' > qry_Z8804dsubAccount_next.in
+chmod 775 qry_Z8804dsubAccount_next.in
+ydb < qry_Z8804dsubAccount_next.in > qry_Z8804dsubAccount_next.out.bf
