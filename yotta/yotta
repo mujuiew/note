@@ -247,6 +247,13 @@ echo 'S A="" F  S A=$O(^Z8401dpaymentState(A)) Q:A=""  S B="" F  S B=$O(^Z8401dp
 chmod 775 Z8401dpaymentState_negative.in
 ydb < Z8401dpaymentState_negative.in > Z8401dpaymentState_negative.out.bf
 
+; REMAINING_PRINCIPAL_BALANCE,REMAINING_INTEREST_BALANCE 12, 13 ติดลบ
+; PRINCIPAL_AMOUNT 9 บวก
+; INTEREST_AMOUNT 10 บวก
+; VAT_AMOUNT 11 บวก
+echo 'S A="" F  S A=$O(^Z8401dpaymentState(A)) Q:A=""  S B="" F  S B=$O(^Z8401dpaymentState(A,B)) Q:B=""  S print=$P(^Z8401dpaymentState(A,B),"|",9)  S int=$P(^Z8401dpaymentState(A,B),"|",10)  S vat=$P(^Z8401dpaymentState(A,B),"|",11)  S remainPrint=$P(^Z8401dpaymentState(A,B),"|",12)  S remainInt=$P(^Z8401dpaymentState(A,B),"|",13)  if (remainPrint<0!remainInt<0)&((print>=0)&(int>=0)&(vat>=0)) w !,A_"|"_B_"|"_^Z8401dpaymentState(A,B)' > Z8401dpaymentState_remainnegative.in
+chmod 775 Z8401dpaymentState_remainnegative.in
+ydb < Z8401dpaymentState_remainnegative.in > Z8401dpaymentState_remainnegative.out
 
 
 
