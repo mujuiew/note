@@ -241,9 +241,7 @@ chmod 775 qry_Z8802daccount_is_adjusting.in
 ydb < qry_Z8802daccount_is_adjusting.in > qry_Z8802daccount_is_adjusting.in.out.bf
 
 
-// hp stage 
-
-; class sub account
+;  hp stage 
 cd /ydbdir
 echo 'S A="" F  S A=$O(^Z8401dpaymentState(A)) Q:A=""  S B="" F  S B=$O(^Z8401dpaymentState(A,B)) Q:B=""  S print=$P(^Z8401dpaymentState(A,B),"|",9)  S int=$P(^Z8401dpaymentState(A,B),"|",10)  S vat=$P(^Z8401dpaymentState(A,B),"|",11)  if (print<0!int<0!vat<0) w !,A_"|"_B_"|"_^Z8401dpaymentState(A,B)' > Z8401dpaymentState_negative.in
 chmod 775 Z8401dpaymentState_negative.in
