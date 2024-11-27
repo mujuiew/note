@@ -230,9 +230,9 @@ ydb < qry_hp_account_installment.in > qry_hp.qry_hp_account_installment.out.bf
 
 ; account closed transaction
 cd /ydbdir  
-echo 'S A="" F  S A=$O(^Z8802daccount(A)) Q:A=""  if $P(^Z8802daccount(A),"|",10)="close" w !,A_"|"_$P(^Z8802daccount(A),"|",10)_"|"_$P(^Z8802daccount(A),"|",11)' > qry_Z8802daccount_closed.in
-chmod 775 qry_Z8802daccount_closed.in
-ydb < qry_Z8802daccount_closed.in > qry_Z8802daccount_closed.in.out.bf
+echo 'S A="" F  S A=$O(^Z8802daccount(A)) Q:A=""  if ($P(^Z8802daccount(A),"|",10)="close")&($P(^Z8802daccount(A),"|",11)>="2024-11-18") w !,A_"|"_$P(^Z8802daccount(A),"|",10)_"|"_$P(^Z8802daccount(A),"|",11)' > qry_Z8802daccount_closed_by_date.in
+chmod 775 qry_Z8802daccount_closed_by_date.in
+ydb < qry_Z8802daccount_closed_by_date.in > qry_Z8802daccount_closed_by_date.in.out.bf
 
 ; account lock
 cd /ydbdir  
@@ -268,3 +268,8 @@ cd /ydbdir
 echo 'S A="200000000000" F  S A=$O(^Z8804dsubAccount(A)) Q:A=""  S B="" F  S B=$O(^Z8804dsubAccount(A,B)) Q:B=""  if ($P(^Z8804dsubAccount(A,B),"|",32)="false"),(B>0),($P(^Z8804dsubAccount(A,1),"|",29)'="9999-12-31") w !,A_"|"_1_"|"_$P(^Z8804dsubAccount(A,B),"|",17)_"|"_$P(^Z8804dsubAccount(A,1),"|",29)' > qry_Z8804dsubAccount_next.in
 chmod 775 qry_Z8804dsubAccount_next.in
 ydb < qry_Z8804dsubAccount_next.in > qry_Z8804dsubAccount_next.out.bf
+
+
+//sum fee unpaid outstanding
+set acc="290000098025" set seq="" set bill="" set fee=""  for  set seq=$O(^Z8804doutstandingBill(acc,seq)) quit:seq=""   for  set bill=$O(^Z8804doutstandingBill(acc,seq,bill)) quit:bill=""  set billseq=$P(^
+Z8804doutstandingBill(acc,seq,bill),"|",7) set fee=fee+$P(^Z8804doutstandingBill(acc,seq,bill),"|",8)  s PAN(acc)=fee
