@@ -13,6 +13,7 @@ func Main2() {
 	file, err := os.Open("query-dloan-payment-publishMessageDetail_response.json")
 	if err != nil {
 		fmt.Printf("1Failed to read file: %v", err)
+		return
 	}
 	defer file.Close()
 
@@ -20,6 +21,7 @@ func Main2() {
 	content, err := ioutil.ReadAll(file)
 	if err != nil {
 		fmt.Printf("2Failed to read file: %v", err)
+		return
 	}
 
 	// Parse the JSON array
@@ -28,7 +30,10 @@ func Main2() {
 	if err != nil {
 		log.Fatalf("Failed to unmarshal JSON: %v", err)
 	}
-	out = append(out, "AccountNumber|EventCode|PrincipalAmount|InterestAmount|PenaltyAmount|VatAmount|FeeAmount\n")
+
+	// Add header to output
+	out = append(out, "AccountNumber|EventCode|PrincipalAmount|InterestAmount|PenaltyAmount|VatAmount|FeeAmount|OtherProperties")
+
 	// Process each transaction
 	for _, tx := range body.ReqBody {
 
@@ -40,7 +45,27 @@ func Main2() {
 				fmt.Println("Error unmarshalling due_bills message:", err)
 				continue
 			}
-			out = append(out, tx.AccountNumber.String()+"|"+tx.EventCode.Val+"|"+dueBillsMsg.PrincipalAmount.Val.String()+"|"+dueBillsMsg.InterestAmount.Val.String()+"|"+dueBillsMsg.PenaltyAmount.Val.String()+"|"+dueBillsMsg.VatAmount.Val.String()+"|\n")
+
+			// Combine bills and penalties for otherProperties
+			var bill string
+			var penalty string
+			if rawBills, ok := dueBillsMsg.OtherProperties["bills"]; ok {
+				if billsStr, ok := rawBills.(string); ok {
+					bill = billsStr
+				}
+			}
+
+			// Check and assign "penalty" field
+			if rawPenalty, ok := dueBillsMsg.OtherProperties["penalty"]; ok {
+				if penaltyStr, ok := rawPenalty.(string); ok {
+					penalty = penaltyStr
+				}
+			}
+
+			out = append(out, fmt.Sprintf("%s|%s|%s|%s|%s|%s||%s|%s",
+				tx.AccountNumber.String(), tx.EventCode.String(), dueBillsMsg.PrincipalAmount.String(),
+				dueBillsMsg.InterestAmount.String(), dueBillsMsg.PenaltyAmount.String(),
+				dueBillsMsg.VatAmount.String(), bill, penalty))
 
 		case "fee":
 			var feeMsg FeeMessage
@@ -49,7 +74,16 @@ func Main2() {
 				fmt.Println("Error unmarshalling fee message:", err)
 				continue
 			}
-			out = append(out, tx.AccountNumber.String()+"|"+tx.EventCode.Val+"|||||"+feeMsg.FeeAmount.Val.String()+"\n")
+			// Include fee details in otherProperties
+
+			var fee string
+			if rawBills, ok := feeMsg.OtherProperties["fee"]; ok {
+				if billsStr, ok := rawBills.(string); ok {
+					fee = billsStr
+				}
+			}
+			out = append(out, fmt.Sprintf("%s|%s|||||%s|%s",
+				tx.AccountNumber.String(), tx.EventCode.String(), feeMsg.FeeAmount.String(), fee))
 
 		case "others":
 			var othersMsg OthersMessage
@@ -58,12 +92,33 @@ func Main2() {
 				fmt.Println("Error unmarshalling others message:", err)
 				continue
 			}
-			out = append(out, tx.AccountNumber.String()+"|"+tx.EventCode.Val+"|"+othersMsg.PrincipalAmount.Val.String()+"|"+othersMsg.InterestAmount.Val.String()+"|"+othersMsg.PenaltyAmount.Val.String()+"|"+othersMsg.VatAmount.Val.String()+"|\n")
+			// Combine advance payment and penalties for otherProperties
+
+			var advancePayment string
+			var penalty string
+			if rawBills, ok := othersMsg.OtherProperties["advance_payment"]; ok {
+				if billsStr, ok := rawBills.(string); ok {
+					advancePayment = billsStr
+				}
+			}
+
+			// Check and assign "penalty" field
+			if rawPenalty, ok := othersMsg.OtherProperties["penalty"]; ok {
+				if penaltyStr, ok := rawPenalty.(string); ok {
+					penalty = penaltyStr
+				}
+			}
+			out = append(out, fmt.Sprintf("%s|%s|%s|%s|%s|%s|||%s|%s",
+				tx.AccountNumber.String(), tx.EventCode.String(), othersMsg.PrincipalAmount.String(), othersMsg.InterestAmount.String(), othersMsg.PenaltyAmount.String(),
+				othersMsg.VatAmount.String(), advancePayment, penalty))
 
 		default:
 			fmt.Printf("Unknown EventCode: %s\n", tx.EventCode)
 		}
 	}
 
-	fmt.Println(out)
+	// Print the output
+	for _, line := range out {
+		fmt.Println(line)
+	}
 }

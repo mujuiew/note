@@ -1,0 +1,34 @@
+# github.com/TN-INCORPORATION/kit/v2 v2.14.7
+## explicit; go 1.23
+github.com/TN-INCORPORATION/kit/v2/apptime
+github.com/TN-INCORPORATION/kit/v2/date
+github.com/TN-INCORPORATION/kit/v2/decimal
+github.com/TN-INCORPORATION/kit/v2/null
+github.com/TN-INCORPORATION/kit/v2/timezone
+# github.com/davecgh/go-spew v1.1.1
+## explicit
+github.com/davecgh/go-spew/spew
+# github.com/pmezard/go-difflib v1.0.0
+## explicit
+github.com/pmezard/go-difflib/difflib
+# github.com/stretchr/testify v1.10.0
+## explicit; go 1.17
+github.com/stretchr/testify/assert
+github.com/stretchr/testify/assert/yaml
+# golang.org/x/text v0.18.0
+## explicit; go 1.18
+golang.org/x/text/feature/plural
+golang.org/x/text/internal
+golang.org/x/text/internal/catmsg
+golang.org/x/text/internal/format
+golang.org/x/text/internal/language
+golang.org/x/text/internal/language/compact
+golang.org/x/text/internal/number
+golang.org/x/text/internal/stringset
+golang.org/x/text/internal/tag
+golang.org/x/text/language
+golang.org/x/text/message
+golang.org/x/text/message/catalog
+# gopkg.in/yaml.v3 v3.0.1
+## explicit
+gopkg.in/yaml.v3
