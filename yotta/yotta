@@ -175,7 +175,7 @@ ydb < qry_state_seq_999.in > qry_fee.qry_state_seq_999.out.bf
 
 unpaid = 0
 
-set acc="" set seq="" set bill="" f  set acc=$O(^Z8804dbill(acc)) quit:acc=""  for  set seq=$O(^Z8804dbill(acc,seq)) quit:seq=""   for  set bill=$O(^Z8804dbill(acc,seq,bill)) quit:bill=""  set prin=$P(^Z8804dbill(acc,seq,bill),"|",13) set int=$P(^Z8804dbill(acc,seq,bill),"|",12) set pen=$P(^Z8804dbill(acc,seq,bill),"|",11) set vat=$P(^Z8804dbill(acc,seq,bill),"|",23) set status=$P(^Z8804dsubAccount(acc,seq),"|",29) if (prin+int+pen+vat=0)&(status="9999-12-31")   w !,acc_"|"_seq_"|"_prin_"|"_int_"|"_pen_"|"_status
+set acc="" set seq="" set bill="" f  set acc=$O(^Z8804dbill(acc)) quit:acc=""  for  set seq=$O(^Z8804dbill(acc,seq)) quit:seq=""   for  set bill=$O(^Z8804dbill(acc,seq,bill)) quit:bill=""  set prin=$P(^Z8804dbill(acc,seq,bill),"|",13) set int=$P(^Z8804dbill(acc,seq,bill),"|",12) set pen=$P(^Z8804dbill(acc,seq,bill),"|",11) set vat=$P(^Z8804dbill(acc,seq,bill),"|",23) set status=$P(^Z8804dsubAccount(acc,seq),"|",29) if (prin+int+pen+vat>0)&(status="9999-12-31")   w !,acc_"|"_seq_"|"_prin_"|"_int_"|"_pen_"|"_status
 
 
 Z8804dflatRatePendingAdvance is done false
@@ -230,9 +230,9 @@ ydb < qry_hp_account_installment.in > qry_hp.qry_hp_account_installment.out.bf
 
 ; account closed transaction
 cd /ydbdir  
-echo 'S A="" F  S A=$O(^Z8802daccount(A)) Q:A=""  if ($P(^Z8802daccount(A),"|",10)="close")&($P(^Z8802daccount(A),"|",11)>="2024-11-18") w !,A_"|"_$P(^Z8802daccount(A),"|",10)_"|"_$P(^Z8802daccount(A),"|",11)' > qry_Z8802daccount_closed_by_date.in
+echo 'S A="" F  S A=$O(^Z8802daccount(A)) Q:A=""  if ($P(^Z8802daccount(A),"|",10)="close") w !,A_"|"_$P(^Z8802daccount(A),"|",10)_"|"_$P(^Z8802daccount(A),"|",11)' > qry_Z8802daccount_closed_by_date.in
 chmod 775 qry_Z8802daccount_closed_by_date.in
-ydb < qry_Z8802daccount_closed_by_date.in > qry_Z8802daccount_closed_by_date.in.out.bf
+ydb < qry_Z8802daccount_closed.in > qry_Z8802daccount_closed.20241227.out.bf
 
 ; account lock
 cd /ydbdir  
