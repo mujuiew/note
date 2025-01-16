@@ -17,6 +17,7 @@ type Transaction struct {
 	AccountSequence null.Int64  `json:"account_sequence"`
 	EventCode       null.String `json:"event_code"`
 	Message         null.String `json:"message"`
+	LastUpdatedDescription null.String `json:"last_updated_description"`
 }
 
 // Define specific structures for each event_code

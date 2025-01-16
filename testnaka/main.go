@@ -36,6 +36,10 @@ func Main2() {
 
 	// Process each transaction
 	for _, tx := range body.ReqBody {
+		
+		if tx.LastUpdatedDescription.Equals("Entry=KAFKA : v1/dloan-interest/accrued-interest/history/bill-generation,") {
+			continue
+		}
 
 		switch tx.EventCode.String() {
 		case "due_bills":
