@@ -32,7 +32,7 @@ func Main2() {
 	}
 
 	// Add header to output
-	out = append(out, "AccountNumber|EventCode|PrincipalAmount|InterestAmount|PenaltyAmount|VatAmount|FeeAmount|OtherProperties")
+	out = append(out, "AccountNumber|EventCode|PrincipalAmount|InterestAmount|PenaltyAmount|VatAmount|FeeAmount|otherProperties[bill]|otherProperties[penalty]|otherProperties[advance_payment]|otherProperties[fee]")
 
 	// Process each transaction
 	for _, tx := range body.ReqBody {
@@ -62,7 +62,7 @@ func Main2() {
 				}
 			}
 
-			out = append(out, fmt.Sprintf("%s|%s|%s|%s|%s|%s||%s|%s",
+			out = append(out, fmt.Sprintf("%s|%s|%s|%s|%s|%s||%s|%s||",
 				tx.AccountNumber.String(), tx.EventCode.String(), dueBillsMsg.PrincipalAmount.String(),
 				dueBillsMsg.InterestAmount.String(), dueBillsMsg.PenaltyAmount.String(),
 				dueBillsMsg.VatAmount.String(), bill, penalty))
@@ -82,7 +82,7 @@ func Main2() {
 					fee = billsStr
 				}
 			}
-			out = append(out, fmt.Sprintf("%s|%s|||||%s|%s",
+			out = append(out, fmt.Sprintf("%s|%s|||||%s||||%s",
 				tx.AccountNumber.String(), tx.EventCode.String(), feeMsg.FeeAmount.String(), fee))
 
 		case "others":
@@ -108,9 +108,9 @@ func Main2() {
 					penalty = penaltyStr
 				}
 			}
-			out = append(out, fmt.Sprintf("%s|%s|%s|%s|%s|%s|||%s|%s",
+			out = append(out, fmt.Sprintf("%s|%s|%s|%s|%s|%s|||%s|%s|",
 				tx.AccountNumber.String(), tx.EventCode.String(), othersMsg.PrincipalAmount.String(), othersMsg.InterestAmount.String(), othersMsg.PenaltyAmount.String(),
-				othersMsg.VatAmount.String(), advancePayment, penalty))
+				othersMsg.VatAmount.String(), penalty, advancePayment))
 
 		default:
 			fmt.Printf("Unknown EventCode: %s\n", tx.EventCode)
